@@ -1,121 +1,81 @@
-# Pokémon Browser
+# Pokemon Browser
 
-A simple React application that fetches data from the [PokeAPI](https://pokeapi.co/) and allows users to search and filter the first 150 Pokémon.
+A modern web application built with Vite and React that allows users to explore and interact with Pokemon data.
 
-## 🌟 Features
+## Features
 
-- 🔍 **Search** Pokémon by name in real time
-- 🎯 **Filter** Pokémon by type (e.g., Fire, Water, Grass)
-- 🧾 View each Pokémon's:
-  - Name
-  - Image (sprite)
-  - ID number
-  - Type(s)
-- 📱 Fully responsive on mobile and desktop
-- ⚠️ Handles loading states, empty results, and API errors
+- Browse Pokemon list with pagination
+- Search Pokemon by name
+- View detailed Pokemon information
+- Responsive design for all devices
+- Modern UI with smooth animations
 
----
+## Tech Stack
 
-## 🔧 Technologies Used
+- React
+- Vite
+- Tailwind CSS
+- Pokemon API
 
-- **React 19**
-- **Vite** – for fast build and dev server
-- **Tailwind CSS** – for styling
-- **PokeAPI** – for Pokémon data
+## Getting Started
 
----
+### Prerequisites
 
-## 🚀 Getting Started
+- Node.js (v14 or higher)
+- npm or yarn
 
-### 1. Clone the Repository
+### Installation
 
+1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/pokemon-browser.git
-cd pokemon-browser
+git clone <repository-url>
+cd Pokemon-assignment
 ```
 
-### 2. Install Dependencies
-
+2. Install dependencies:
 ```bash
 npm install
+# or
+yarn install
 ```
 
-### 3. Start Development Server
-
+3. Start the development server:
 ```bash
-npm run start
+npm run dev
+# or
+yarn dev
 ```
 
-This will run both Vite dev server and Tailwind CSS in watch mode.
+4. Open your browser and visit `http://localhost:5173`
 
----
-
-## 🧱 Project Structure
+## Project Structure
 
 ```
-pokemon-browser/
-├── public/
-├── components/
-│   ├── Header.jsx
-│   ├── SearchBar.jsx
-│   ├── PokemonList.jsx
-│   └── PokemonCard.jsx
-├── App.jsx
-├── index.html
-├── tailwind.config.js
-├── postcss.config.js
-├── package.json
-└── README.md
+Pokemon-assignment/
+├── src/              # Source files
+├── public/           # Static assets
+├── dist/             # Build output
+├── index.html        # Entry HTML file
+├── vite.config.js    # Vite configuration
+├── postcss.config.mjs # PostCSS configuration
+└── package.json      # Project dependencies
 ```
 
----
+## Available Scripts
 
-## 🛠 Build for Production
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-```bash
-npm run build
-```
+## Contributing
 
-Vite will output files to the `dist/` directory.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
----
+## License
 
-## 🌐 Deployment (Vercel)
-
-1. Push this repo to GitHub
-2. Go to [Vercel](https://vercel.com/)
-3. Import your GitHub repo
-4. Set these Vercel settings:
-   - **Framework Preset:** Vite
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-5. Click **Deploy**
-
----
-
-## 📦 Scripts Overview
-
-```json
-"scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "lint": "eslint .",
-  "preview": "vite preview",
-  "tailwind": "postcss ./styles.css -o ./output.css --watch",
-  "start": "concurrently \"npm run dev\" \"npm run tailwind\""
-}
-```
-
----
-
-## 💡 Future Improvements
-
-- Pagination or lazy loading
-- More filtering options (e.g. by ability, stats)
-- Detailed Pokémon modal on click
-
----
-
-## 📝 License
-
-MIT © [Shashank Gupta](https://github.com/Shashankg27)
+This project is licensed under the MIT License - see the LICENSE file for details.
