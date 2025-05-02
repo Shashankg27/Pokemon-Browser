@@ -13,24 +13,23 @@ export default function PokemonDetail() {
 
   useEffect(() => {
     const fetchPokemonDetails = async () => {
-      try {
-        // Fetch basic Pokemon data
+      try{
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-        if (!response.ok) throw new Error('Pokemon not found');
+        if(!response.ok) throw new Error('Pokemon not found');
         const data = await response.json();
         setPokemon(data);
 
-        // Fetch species data to get evolution chain URL
         const speciesResponse = await fetch(data.species.url);
         const speciesData = await speciesResponse.json();
         
-        // Fetch evolution chain data
         const evolutionResponse = await fetch(speciesData.evolution_chain.url);
         const evolutionData = await evolutionResponse.json();
         setEvolutionChain(evolutionData);
-      } catch (err) {
+      }
+      catch(err){
         setError(err.message);
-      } finally {
+      }
+      finally{
         setLoading(false);
       }
     };
@@ -42,7 +41,7 @@ export default function PokemonDetail() {
     const evolutionChain = [];
     let currentChain = chain;
 
-    while (currentChain) {
+    while(currentChain){
       evolutionChain.push(currentChain.species);
       currentChain = currentChain.evolves_to[0];
     }
@@ -73,11 +72,10 @@ export default function PokemonDetail() {
     );
   };
 
-  if (loading) return <div className="text-center mt-10">Loading...</div>;
-  if (error) return <div className="text-center mt-10 text-red-500">{error}</div>;
-  if (!pokemon) return null;
+  if(loading) return <div className="text-center mt-10">Loading...</div>;
+  if(error) return <div className="text-center mt-10 text-red-500">{error}</div>;
+  if(!pokemon) return null;
 
-  // Compute weaknesses
   const pokemonTypes = pokemon.types.map(t => t.type.name);
   const weaknessesSet = new Set();
   pokemonTypes.forEach(type => {
@@ -144,7 +142,6 @@ export default function PokemonDetail() {
             </div>
           </div>
 
-          {/* Right Column - Additional Info */}
           <div className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold mb-4">Abilities</h2>
@@ -184,7 +181,6 @@ export default function PokemonDetail() {
                   <span className="font-medium">Weight:</span> {pokemon.weight / 10}kg
                 </div>
               </div>
-              {/* Weak Against Section */}
               <div className="mt-4">
                 <h2 className="text-xl font-bold mb-2">Weak Against</h2>
                 <div className="flex flex-wrap gap-2">
@@ -209,7 +205,6 @@ export default function PokemonDetail() {
           </div>
         </div>
 
-        {/* Evolution Chain Section */}
         {evolutionChain && (
           <div className="mt-8 pt-8 border-t">
             <h2 className="text-2xl font-bold mb-6 text-center">Evolution Chain</h2>

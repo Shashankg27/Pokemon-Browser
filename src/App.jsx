@@ -21,7 +21,7 @@ function PokemonHome() {
   const { filteredPokemon, searchTerm, setSearchTerm, selectedTypes, setSelectedTypes, selectedSort, setSelectedSort } = usePokemonFilter(allPokemon);
   const { currentPage, setCurrentPage, currentPokemon, totalPages, getPageNumbers } = usePagination(filteredPokemon, pokemonPerPage);
 
-  if (loading) return (
+  if(loading) return (
     <div className="text-center mt-10">
       <div className="text-lg mb-2">Loading Pokémon... {Math.floor(loadingProgress)}%</div>
       <div className="w-64 h-2 bg-gray-200 rounded-full mx-auto">
@@ -33,7 +33,7 @@ function PokemonHome() {
     </div>
   );
   
-  if (error) return <div className="text-center mt-10 text-red-500">{error}</div>;
+  if(error) return <div className="text-center mt-10 text-red-500">{error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-100">

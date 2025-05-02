@@ -6,7 +6,7 @@ export function ComparisonProvider({ children }) {
   const [selectedPokemon, setSelectedPokemon] = useState([]);
 
   const addToComparison = (pokemon) => {
-    if (selectedPokemon.length < 2 && !selectedPokemon.find(p => p.id === pokemon.id)) {
+    if(selectedPokemon.length < 2 && !selectedPokemon.find(p => p.id === pokemon.id)) {
       setSelectedPokemon([...selectedPokemon, pokemon]);
     }
   };
@@ -28,7 +28,7 @@ export function ComparisonProvider({ children }) {
 
 export function useComparison() {
   const context = useContext(ComparisonContext);
-  if (!context) {
+  if(!context){
     throw new Error('useComparison must be used within a ComparisonProvider');
   }
   return context;

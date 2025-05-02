@@ -14,13 +14,13 @@ export default function PokemonComparison() {
 
   useEffect(() => {
     const fetchPokemonData = async () => {
-      try {
+      try{
         const [response1, response2] = await Promise.all([
           fetch(`https://pokeapi.co/api/v2/pokemon/${id1}`),
           fetch(`https://pokeapi.co/api/v2/pokemon/${id2}`)
         ]);
 
-        if (!response1.ok || !response2.ok) throw new Error('Pokemon not found');
+        if(!response1.ok || !response2.ok) throw new Error('Pokemon not found');
         
         const [data1, data2] = await Promise.all([
           response1.json(),
@@ -29,9 +29,11 @@ export default function PokemonComparison() {
 
         setPokemon1(data1);
         setPokemon2(data2);
-      } catch (err) {
+      }
+      catch(err){
         setError(err.message);
-      } finally {
+      }
+      finally{
         setLoading(false);
       }
     };
@@ -39,9 +41,9 @@ export default function PokemonComparison() {
     fetchPokemonData();
   }, [id1, id2]);
 
-  if (loading) return <div className="text-center mt-10">Loading comparison...</div>;
-  if (error) return <div className="text-center mt-10 text-red-500">{error}</div>;
-  if (!pokemon1 || !pokemon2) return null;
+  if(loading) return <div className="text-center mt-10">Loading comparison...</div>;
+  if(error) return <div className="text-center mt-10 text-red-500">{error}</div>;
+  if(!pokemon1 || !pokemon2) return null;
 
   const renderPokemonInfo = (pokemon, isLeft = true) => (
     <div className="space-y-6">

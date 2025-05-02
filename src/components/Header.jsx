@@ -9,13 +9,12 @@ export default function Header() {
   const { favorites } = useFavorites();
 
   const handleRandomPokemon = useCallback(() => {
-    // Generate a random number between 1 and 898 (total number of Pokemon)
     const randomId = Math.floor(Math.random() * 898) + 1;
     navigate(`/pokemon/${randomId}`);
   }, [navigate]);
 
   const handleCompare = useCallback(() => {
-    if (selectedPokemon.length === 2) {
+    if(selectedPokemon.length === 2){
       navigate(`/compare/${selectedPokemon[0].id}/${selectedPokemon[1].id}`);
     }
   }, [navigate, selectedPokemon]);

@@ -48,7 +48,7 @@ export function PokemonCacheProvider({ children }) {
 
 export function usePokemonCache() {
   const context = useContext(PokemonCacheContext);
-  if (!context) {
+  if(!context){
     throw new Error('usePokemonCache must be used within a PokemonCacheProvider');
   }
   return context;

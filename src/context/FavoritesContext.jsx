@@ -4,12 +4,10 @@ const FavoritesContext = createContext();
 
 export function FavoritesProvider({ children }) {
   const [favorites, setFavorites] = useState(() => {
-    // Initialize from localStorage
     const savedFavorites = localStorage.getItem('favoritePokemon');
     return savedFavorites ? JSON.parse(savedFavorites) : [];
   });
 
-  // Update localStorage when favorites change
   useEffect(() => {
     localStorage.setItem('favoritePokemon', JSON.stringify(favorites));
   }, [favorites]);
