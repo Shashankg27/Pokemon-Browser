@@ -1,54 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import PokemonList from "./components/PokemonList";
+import Pagination from "./components/Pagination";
+import PokemonDetail from "./components/PokemonDetail";
+import PokemonComparison from "./components/PokemonComparison";
+import Favorites from "./components/Favorites";
+import { usePokemon } from "./hooks/usePokemon.js";
+import { usePokemonFilter } from "./hooks/usePokemonFilter.js";
+import { usePagination } from "./hooks/usePagination.js";
+import { ComparisonProvider } from "./context/ComparisonContext";
+import { FavoritesProvider } from "./context/FavoritesContext";
+import { PokemonCacheProvider } from "./context/PokemonCacheContext";
 
-export default function App() {
-  const [allPokemon, setAllPokemon] = useState([]);
-  const [filteredPokemon, setFilteredPokemon] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedType, setSelectedType] = useState("All");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+function PokemonHome() {
+  const [pokemonPerPage, setPokemonPerPage] = useState(20);
+  
+  const { allPokemon, loading, error, loadingProgress } = usePokemon();
+  const { filteredPokemon, searchTerm, setSearchTerm, selectedTypes, setSelectedTypes, selectedSort, setSelectedSort } = usePokemonFilter(allPokemon);
+  const { currentPage, setCurrentPage, currentPokemon, totalPages, getPageNumbers } = usePagination(filteredPokemon, pokemonPerPage);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=150");
-        const data = await response.json();
-
-        const details = await Promise.all(
-          data.results.map(async (pokemon) => {
-            const res = await fetch(pokemon.url);
-            return res.json();
-          })
-        );
-
-        setAllPokemon(details);
-        setFilteredPokemon(details);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch Pokémon.");
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    let filtered = allPokemon.filter((pokemon) =>
-      pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    if (selectedType !== "All") {
-      filtered = filtered.filter((pokemon) =>
-        pokemon.types.some((t) => t.type.name === selectedType.toLowerCase())
-      );
-    }
-    setFilteredPokemon(filtered);
-  }, [searchTerm, selectedType, allPokemon]);
-
-  if (loading) return <div className="text-center mt-10">Loading...</div>;
+  if (loading) return (
+    <div className="text-center mt-10">
+      <div className="text-lg mb-2">Loading Pokémon... {loadingProgress}%</div>
+      <div className="w-64 h-2 bg-gray-200 rounded-full mx-auto">
+        <div 
+          className="h-full bg-blue-500 rounded-full transition-all duration-300"
+          style={{ width: `${loadingProgress}%` }}
+        ></div>
+      </div>
+    </div>
+  );
+  
   if (error) return <div className="text-center mt-10 text-red-500">{error}</div>;
 
   return (
@@ -58,14 +42,47 @@ export default function App() {
         <SearchBar
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
-          selectedType={selectedType}
-          setSelectedType={setSelectedType}
+          selectedTypes={selectedTypes}
+          setSelectedTypes={setSelectedTypes}
+          pokemonPerPage={pokemonPerPage}
+          setPokemonPerPage={setPokemonPerPage}
+          selectedSort={selectedSort}
+          setSelectedSort={setSelectedSort}
         />
-        <PokemonList pokemon={filteredPokemon} />
+        <PokemonList pokemon={currentPokemon} />
+        
+        {filteredPokemon.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            getPageNumbers={getPageNumbers}
+            onPageChange={setCurrentPage}
+          />
+        )}
+
         {filteredPokemon.length === 0 && (
           <div className="text-center mt-10">No Pokémon found.</div>
         )}
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <PokemonCacheProvider>
+      <FavoritesProvider>
+        <ComparisonProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<PokemonHome />} />
+              <Route path="/pokemon/:id" element={<PokemonDetail />} />
+              <Route path="/compare/:id1/:id2" element={<PokemonComparison />} />
+              <Route path="/favorites" element={<Favorites />} />
+            </Routes>
+          </Router>
+        </ComparisonProvider>
+      </FavoritesProvider>
+    </PokemonCacheProvider>
   );
 }
