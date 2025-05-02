@@ -23,7 +23,7 @@ function PokemonHome() {
 
   if (loading) return (
     <div className="text-center mt-10">
-      <div className="text-lg mb-2">Loading Pokémon... {loadingProgress}%</div>
+      <div className="text-lg mb-2">Loading Pokémon... {Math.floor(loadingProgress)}%</div>
       <div className="w-64 h-2 bg-gray-200 rounded-full mx-auto">
         <div 
           className="h-full bg-blue-500 rounded-full transition-all duration-300"
