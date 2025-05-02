@@ -46,68 +46,96 @@ export function usePokemon() {
             return;
           }
 
-          // Fetch only the uncached Pokemon
-          const fetchedPokemon = await Promise.all(
-            uncachedPokemon.map(async (pokemon, index) => {
-              try {
-                const response = await fetch(pokemon.url);
-                if (!response.ok) {
-                  throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                addToCache(data);
-                if (isMounted) {
-                  setLoadingProgress((index + 1) / uncachedPokemon.length * 100);
-                }
-                return data;
-              } catch (err) {
-                console.error(`Error fetching Pokemon ${pokemon.name}:`, err);
-                return null;
-              }
-            })
-          );
+          // Fetch uncached Pokemon in batches of 20
+          const batchSize = 20;
+          const batches = Math.ceil(uncachedPokemon.length / batchSize);
+          let allFetchedPokemon = [];
 
-          // Filter out any failed fetches
-          const validFetchedPokemon = fetchedPokemon.filter(pokemon => pokemon !== null);
+          for (let i = 0; i < batches; i++) {
+            const start = i * batchSize;
+            const end = Math.min(start + batchSize, uncachedPokemon.length);
+            const batch = uncachedPokemon.slice(start, end);
+
+            const batchResults = await Promise.all(
+              batch.map(async (pokemon) => {
+                try {
+                  const response = await fetch(pokemon.url);
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                  }
+                  const data = await response.json();
+                  addToCache(data);
+                  return data;
+                } catch (err) {
+                  console.error(`Error fetching Pokemon ${pokemon.name}:`, err);
+                  return null;
+                }
+              })
+            );
+
+            allFetchedPokemon = [...allFetchedPokemon, ...batchResults.filter(Boolean)];
+            
+            if (isMounted) {
+              const progress = Math.floor(((i + 1) / batches) * 100);
+              setLoadingProgress(progress);
+            }
+
+            // Add a small delay between batches to avoid rate limiting
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
 
           // Combine cached and newly fetched Pokemon
           const combinedPokemon = cachedPokemon.map(pokemon => {
             if (pokemon.sprites) return pokemon;
             const id = parseInt(pokemon.url.split('/')[6]);
-            return validFetchedPokemon.find(p => p.id === id);
+            return allFetchedPokemon.find(p => p.id === id);
           }).filter(Boolean);
 
           if (isMounted) {
             setAllPokemon(combinedPokemon);
           }
         } else {
-          // No cache, fetch all Pokemon
-          const fetchedPokemon = await Promise.all(
-            pokemonList.map(async (pokemon, index) => {
-              try {
-                const response = await fetch(pokemon.url);
-                if (!response.ok) {
-                  throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                addToCache(data);
-                if (isMounted) {
-                  setLoadingProgress((index + 1) / pokemonList.length * 100);
-                }
-                return data;
-              } catch (err) {
-                console.error(`Error fetching Pokemon ${pokemon.name}:`, err);
-                return null;
-              }
-            })
-          );
+          // No cache, fetch all Pokemon in batches
+          const batchSize = 20;
+          const batches = Math.ceil(pokemonList.length / batchSize);
+          let allFetchedPokemon = [];
 
-          // Filter out any failed fetches
-          const validFetchedPokemon = fetchedPokemon.filter(Boolean);
+          for (let i = 0; i < batches; i++) {
+            const start = i * batchSize;
+            const end = Math.min(start + batchSize, pokemonList.length);
+            const batch = pokemonList.slice(start, end);
+
+            const batchResults = await Promise.all(
+              batch.map(async (pokemon) => {
+                try {
+                  const response = await fetch(pokemon.url);
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                  }
+                  const data = await response.json();
+                  addToCache(data);
+                  return data;
+                } catch (err) {
+                  console.error(`Error fetching Pokemon ${pokemon.name}:`, err);
+                  return null;
+                }
+              })
+            );
+
+            allFetchedPokemon = [...allFetchedPokemon, ...batchResults.filter(Boolean)];
+            
+            if (isMounted) {
+              const progress = Math.floor(((i + 1) / batches) * 100);
+              setLoadingProgress(progress);
+            }
+
+            // Add a small delay between batches to avoid rate limiting
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
 
           if (isMounted) {
-            setAllPokemon(validFetchedPokemon);
-            addMultipleToCache(validFetchedPokemon);
+            setAllPokemon(allFetchedPokemon);
+            addMultipleToCache(allFetchedPokemon);
           }
         }
 
