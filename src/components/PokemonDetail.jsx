@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { typeColors } from '../utils/typeColors';
+import { typeWeaknesses } from '../utils/typeEffectiveness';
 
 export default function PokemonDetail() {
   const { id } = useParams();
@@ -75,6 +76,14 @@ export default function PokemonDetail() {
   if (loading) return <div className="text-center mt-10">Loading...</div>;
   if (error) return <div className="text-center mt-10 text-red-500">{error}</div>;
   if (!pokemon) return null;
+
+  // Compute weaknesses
+  const pokemonTypes = pokemon.types.map(t => t.type.name);
+  const weaknessesSet = new Set();
+  pokemonTypes.forEach(type => {
+    (typeWeaknesses[type] || []).forEach(weak => weaknessesSet.add(weak));
+  });
+  const weaknesses = Array.from(weaknessesSet);
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
@@ -173,6 +182,27 @@ export default function PokemonDetail() {
                 </div>
                 <div className="bg-gray-100 p-3 rounded-lg">
                   <span className="font-medium">Weight:</span> {pokemon.weight / 10}kg
+                </div>
+              </div>
+              {/* Weak Against Section */}
+              <div className="mt-4">
+                <h2 className="text-xl font-bold mb-2">Weak Against</h2>
+                <div className="flex flex-wrap gap-2">
+                  {weaknesses.length === 0 ? (
+                    <span className="text-gray-500">None</span>
+                  ) : (
+                    weaknesses.map(type => {
+                      const colors = typeColors[type] || { bg: 'bg-red-200', text: 'text-red-800' };
+                      return (
+                        <span
+                          key={type}
+                          className={`px-3 py-1 rounded-full ${colors.bg} ${colors.text} font-semibold capitalize`}
+                        >
+                          {type}
+                        </span>
+                      );
+                    })
+                  )}
                 </div>
               </div>
             </div>
