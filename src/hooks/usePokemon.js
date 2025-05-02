@@ -17,8 +17,16 @@ export function usePokemon() {
         setError(null);
         setLoadingProgress(0);
 
-        // First, fetch the list of all Pokemon
-        const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=898');
+        // First, get the total count of Pokemon
+        const countResponse = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1');
+        if (!countResponse.ok) {
+          throw new Error(`HTTP error! status: ${countResponse.status}`);
+        }
+        const countData = await countResponse.json();
+        const totalPokemon = countData.count;
+
+        // Then fetch the list of all Pokemon
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${totalPokemon}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
