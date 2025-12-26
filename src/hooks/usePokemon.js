@@ -38,11 +38,14 @@ export function usePokemon() {
             return cached || pokemon;
           });
 
+          if(isMounted){
+            setAllPokemon(cachedPokemon);
+          }
+
           const uncachedPokemon = cachedPokemon.filter(pokemon => !pokemon.sprites);
           
           if(uncachedPokemon.length === 0){
             if(isMounted){
-              setAllPokemon(cachedPokemon);
               setLoading(false);
               setLoadingProgress(100);
             }
@@ -52,6 +55,7 @@ export function usePokemon() {
           const batchSize = 20;
           const batches = Math.ceil(uncachedPokemon.length / batchSize);
           let allFetchedPokemon = [];
+          let currentCombinedPokemon = [...cachedPokemon];
 
           for(let i=0; i<batches; i++){
             const start = i * batchSize;
@@ -78,7 +82,15 @@ export function usePokemon() {
 
             allFetchedPokemon = [...allFetchedPokemon, ...batchResults.filter(Boolean)];
             
+            currentCombinedPokemon = cachedPokemon.map(pokemon => {
+              if(pokemon.sprites) return pokemon;
+              const id = parseInt(pokemon.url.split('/')[6]);
+              const fetched = allFetchedPokemon.find(p => p.id === id);
+              return fetched || pokemon;
+            }).filter(Boolean);
+            
             if(isMounted){
+              setAllPokemon([...currentCombinedPokemon]);
               const progress = Math.floor(((i + 1) / batches) * 100);
               setLoadingProgress(progress);
             }
@@ -127,6 +139,7 @@ export function usePokemon() {
             allFetchedPokemon = [...allFetchedPokemon, ...batchResults.filter(Boolean)];
             
             if(isMounted){
+              setAllPokemon([...allFetchedPokemon]);
               const progress = Math.floor(((i + 1) / batches) * 100);
               setLoadingProgress(progress);
             }

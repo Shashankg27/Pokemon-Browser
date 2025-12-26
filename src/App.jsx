@@ -20,18 +20,6 @@ function PokemonHome() {
   const { allPokemon, loading, error, loadingProgress } = usePokemon();
   const { filteredPokemon, searchTerm, setSearchTerm, selectedTypes, setSelectedTypes, selectedSort, setSelectedSort } = usePokemonFilter(allPokemon);
   const { currentPage, setCurrentPage, currentPokemon, totalPages, getPageNumbers } = usePagination(filteredPokemon, pokemonPerPage);
-
-  if(loading) return (
-    <div className="text-center mt-10">
-      <div className="text-lg mb-2">Loading Pokémon... {Math.floor(loadingProgress)}%</div>
-      <div className="w-64 h-2 bg-gray-200 rounded-full mx-auto">
-        <div 
-          className="h-full bg-blue-500 rounded-full transition-all duration-300"
-          style={{ width: `${loadingProgress}%` }}
-        ></div>
-      </div>
-    </div>
-  );
   
   if(error) return <div className="text-center mt-10 text-red-500">{error}</div>;
 
@@ -39,6 +27,17 @@ function PokemonHome() {
     <div className="min-h-screen bg-gray-100">
       <Header />
       <div className="max-w-6xl mx-auto p-4">
+        {loading && (
+          <div className="text-center mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="text-sm font-medium text-blue-800 mb-2">Loading Pokémon... {Math.floor(loadingProgress)}%</div>
+            <div className="w-full max-w-md h-2 bg-blue-100 rounded-full mx-auto">
+              <div 
+                className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                style={{ width: `${loadingProgress}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
         <SearchBar
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
